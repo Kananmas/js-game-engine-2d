@@ -1,0 +1,17 @@
+{
+  "name": "javascript-game-engine",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "source": "src/index.html",
+  "scripts": {
+    "start":"parcel src/index.html",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "parcel": "^2.8.3"
+  }
+}
