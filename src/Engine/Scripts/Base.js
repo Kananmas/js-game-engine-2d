@@ -21,7 +21,7 @@ export function createGridMap(grid) {
     for (let i = 0; i < xAxis.length; i++) {
         for (let j = 0; j < yAxis.length; j++) {
             key = `[${xAxis[i]},${yAxis[j]}]`
-            gridMap[key] = { hasOwner: false }
+            gridMap[key] = { owner: null }
         }
     }
     return gridMap;

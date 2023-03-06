@@ -7,11 +7,12 @@ export class GameObject {
     id = Math.random().toString(16).slice(2);
     hasCustomStyles = false;
     areCustomStylesApplied = false;
-    oldPostion = this.position;
+    oldPosition = [];
     positionChanged = false;
 
     constructor(position = [0, 0], image) {
         this.position = position;
+        this.oldPosition = position;
         this.image = image;
 
         this.render()
@@ -28,6 +29,7 @@ export class GameObject {
 
     render(root = document.createElement('div')) {
         this.spawn();
+        this.createRects();
         root.appendChild(this.htmlElement);
     }
 
@@ -63,32 +65,30 @@ export class GameObject {
     }
 
     recordPostion(grid) {
-        return () => {
-            if (this.positionChanged) {
-                this.unrecordPostion(grid);
-                const [x, y] = this.position;
-                const rects = [[x, y], [x, y + this.width], [x + this.height, y]]
+        if (this.positionChanged) {
+            this.unrecordPostion(grid);
+            const [x, y] = this.position;
+            const rects = [[x, y], [x, y + this.width], [x + this.height, y]]
 
-                const posVertLine = createVerticalLine(rects[0], this.height);
-                const posHorLine = createHorizontalLine(rects[0], this.width);
-                const negVertLine = createVerticalLine(rects[1], this.height);
-                const negHorLine = createHorizontalLine(rects[2], this.width);
+            const posVertLine = createVerticalLine(rects[0], this.height);
+            const posHorLine = createHorizontalLine(rects[0], this.width);
+            const negVertLine = createVerticalLine(rects[1], this.height);
+            const negHorLine = createHorizontalLine(rects[2], this.width);
 
-                let allPoints = new Array();
-                allPoints = allPoints.concat(posVertLine, posHorLine, negVertLine, negHorLine)
+            let allPoints = new Array();
+            allPoints = allPoints.concat(posVertLine, posHorLine, negVertLine, negHorLine)
 
-                allPoints.forEach((point) => {
-                    const key = `[${point[0]},${point[1]}]`
-                    const target = grid[key];
-                    target.hasOwner = true;
-                })
-                this.oldPostion = this.position;
-            }
+            allPoints.forEach((point) => {
+                const key = `[${point[0]},${point[1]}]`
+                const target = grid[key];
+                target.owner = this;
+            })
+            this.oldPosition = this.position;
         }
     }
 
     unrecordPostion(grid) {
-        const [x, y] = this.position;
+        const [x, y] = this.oldPosition;
         const rects = [[x, y], [x, y + this.width], [x + this.height, y]]
 
         const posVertLine = createVerticalLine(rects[0], this.height);
@@ -102,8 +102,13 @@ export class GameObject {
         allPoints.forEach((point) => {
             const key = `[${point[0]},${point[1]}]`
             const target = grid[key];
-            target.hasOwner = false;
+            target.owner = null;
         })
+    }
+
+    createRects() {
+        const [x, y] = this.position;
+        this.rects = [[x, y], [x, y + this.width], [x + this.height, y], [x + this.height, y + this.width]]
     }
 }
 

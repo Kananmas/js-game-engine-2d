@@ -6,10 +6,9 @@ export class DynamicObject extends GameObject {
     currentPosition = 0;
     finsishedRoute = false;
     isPlayer = false;
-    isPositionUpdated = false;
 
 
-    constructor(args, animation = [], routeMap = []) {
+    constructor(animation = [], routeMap = [], args) {
         super(args);
         this.animation = animation;
         this.routeMap = routeMap;
@@ -23,8 +22,10 @@ export class DynamicObject extends GameObject {
         }
         if (newPosition) {
             this.positionChanged = newPosition[0] !== this.position[0] || newPosition[1] !== this.position[1];
-            if (this.positionChanged)
+            if (this.positionChanged) {
                 this.setPostion(newPosition);
+                this.createRects();
+            }
         }
         else if (this.routeMap.length) {
             this.positionChanged = newRoute[0] !== this.position[0] || newRoute[1] !== this.position[1];
