@@ -1,10 +1,16 @@
 import { createGrid } from "./Base";
+import { createGridMap } from "./Base";
+
 
 const grid = createGrid();
 const root = document.getElementById('root');
+const gridMap = createGridMap(grid);
+
+
 
 export const Engine = {
     grid,
+    gridMap,
     isInitialized: false,
     currentX: 0,
     currentY: 0,
@@ -12,11 +18,12 @@ export const Engine = {
     initialze() {
         for (const key in this.objects) {
             const currentObj = this.objects[key];
-
             if (currentObj.render !== undefined) {
                 currentObj.render(root);
             }
+            currentObj.recordPostion(this.gridMap)();
         }
+
         this.isInitialized = true;
     },
     update() {
@@ -24,7 +31,12 @@ export const Engine = {
             const currentObj = this.objects[key];
 
             if (currentObj.rerender !== undefined) {
-                currentObj.rerender();
+                const point = [this.grid[0][this.currentX], this.grid[0][this.currentY]]
+                if (currentObj.isPlayer) {
+                    currentObj.rerender(point)
+                }
+                else { currentObj.rerender(); }
+                currentObj.recordPostion(this.gridMap)();
             }
         }
     },
@@ -46,8 +58,16 @@ export const Engine = {
                 this.currentX += 1;
         }
     },
-    addObjects(newObj) {
-        const newKey = Math.random().toString(16).slice(2)
-        this.objects[newKey] = newObj;
+    addObjects(Objs) {
+        for (const object of Objs) {
+            const newKey = object.id;
+            this.objects[newKey] = object;
+        }
+    },
+    Destoy(id) {
+        const target = document.getElementById(id);
+        const parent = target.parentElement;
+
+        parent.removeChild(target);
     }
 }

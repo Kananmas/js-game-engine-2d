@@ -1,50 +1,34 @@
-import { Engine } from './Engine/Scripts/Renderer';
-import { DynamicObject, UnWalkableObject } from './Engine/Scripts/GameObjects'
+import { Engine } from './Engine/Scripts/Engine';
+import { DynamicObject } from './Engine/Scripts/DynamicObject';
+import { Obsticale } from './Engine/Scripts/Obsticale';
 
-const tile2 = new DynamicObject(undefined, 
-    (function(){
-        let result = [];
-        for(let i=0;i<=100;i=i+2){
-            result.push([50,100+i])
-        }
-        return result;
-    })()
-)
+const player = new DynamicObject();
+const Enemy = new DynamicObject({}, undefined, (function () {
+    let result = [];
+    for (let i = 0; i < 100; i = i + 2) {
+        result.push([400, 100 + i]);
+    }
+    return result;
+})());
+const tile = new Obsticale([700, 700]);
 
-const tile1 = new DynamicObject(undefined, 
-    (function(){
-        let result = [];
-        for(let i=0;i<=100;i=i+2){
-            result.push([250,300+i])
-        }
-        return result;
-    })()
-)
+player.applyCustomStyles({
+    backgroundColor: 'red',
+})
 
 
-const tile3 = new DynamicObject(undefined, 
-    (function(){
-        let result = [];
-        for(let i=0;i<=100;i=i+2){
-            result.push([300+i, 400])
-        }
-        return result;
-    })()
-)
+player.isPlayer = true;
 
-
-Engine.addObjects(tile2);
-Engine.addObjects(tile1);
-Engine.addObjects(tile3);
-
-
+Engine.addObjects([player, Enemy, tile])
 
 setInterval(() => {
-    if (Engine.isInitialized) { Engine.update(); }
+    if (Engine.isInitialized) {
+        Engine.update();
+    }
     else {
         Engine.initialze()
     }
-}, 100)
+}, 50)
 
 window.addEventListener('keypress', (e) => { Engine.controlInput(e) }, true)
 

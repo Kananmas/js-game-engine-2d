@@ -11,3 +11,18 @@ export function createGrid() {
 
     return result
 }
+
+export function createGridMap(grid) {
+    grid = grid ? grid : createGrid();
+    let xAxis = grid[0];
+    let yAxis = grid[1];
+    let gridMap = {};
+
+    for (let i = 0; i < xAxis.length; i++) {
+        for (let j = 0; j < yAxis.length; j++) {
+            key = `[${xAxis[i]},${yAxis[j]}]`
+            gridMap[key] = { hasOwner: false }
+        }
+    }
+    return gridMap;
+}
