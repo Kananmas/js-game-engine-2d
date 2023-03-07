@@ -5,3 +5,8 @@
     float: left;
     position: absolute;
 }
+
+
+body {
+    background-image: url(./Assets/grasstexture.jpg);
+}

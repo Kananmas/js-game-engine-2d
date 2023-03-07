@@ -14,7 +14,6 @@ export class GameObject {
         this.position = position;
         this.oldPosition = position;
         this.image = image;
-
         this.render()
     }
 
@@ -34,6 +33,7 @@ export class GameObject {
     }
 
     spawn() {
+        this.htmlElement.id = this.id;
         // sizing
         this.htmlElement.style.width = this.width + 'px';
         this.htmlElement.style.height = this.height + 'px';
@@ -41,10 +41,16 @@ export class GameObject {
         this.htmlElement.style.position = 'absolute'
         this.htmlElement.style.left = this.position[0] + 'px';
         this.htmlElement.style.top = this.position[1] + 'px';
-        if (!this.hasCustomStyles) {
-            // coloring
-            this.htmlElement.style.backgroundColor = 'black';
-            this.htmlElement.id = this.id;
+        // coloring
+        if (!this.image) { this.htmlElement.style.backgroundColor = 'black' }
+        else {
+            this.htmlElement.style.backgroundImage = `url(${this.image})`;
+            this.htmlElement.style.backgroundSize = `${this.width}px ${this.height}px`
+            this.htmlElement.style.backgroundColor = ''
+        }
+
+        if (this.hasCustomStyles) {
+            this.applyCustomStyles(this.customStyles);
         }
     }
 
@@ -54,7 +60,7 @@ export class GameObject {
         if (renderedElement) {
             for (const key in styles) {
                 if (renderedElement.style[key] !== styles[key]) {
-                    renderedElement.style[key] = styles[key]
+                    renderedElement.style[key] = styles[key];
                 }
             }
         }
@@ -64,9 +70,9 @@ export class GameObject {
         this.hasCustomStyles = true;
     }
 
-    recordPostion(grid) {
+    recordPosition() {
         if (this.positionChanged) {
-            this.unrecordPostion(grid);
+            this.unrecordPosition(this.gridMap);
             const [x, y] = this.position;
             const rects = [[x, y], [x, y + this.width], [x + this.height, y]]
 
@@ -80,14 +86,14 @@ export class GameObject {
 
             allPoints.forEach((point) => {
                 const key = `[${point[0]},${point[1]}]`
-                const target = grid[key];
+                const target = this.gridMap[key];
                 target.owner = this;
             })
             this.oldPosition = this.position;
         }
     }
 
-    unrecordPostion(grid) {
+    unrecordPosition() {
         const [x, y] = this.oldPosition;
         const rects = [[x, y], [x, y + this.width], [x + this.height, y]]
 
@@ -101,7 +107,7 @@ export class GameObject {
 
         allPoints.forEach((point) => {
             const key = `[${point[0]},${point[1]}]`
-            const target = grid[key];
+            const target = this.gridMap[key];
             target.owner = null;
         })
     }
@@ -109,6 +115,14 @@ export class GameObject {
     createRects() {
         const [x, y] = this.position;
         this.rects = [[x, y], [x, y + this.width], [x + this.height, y], [x + this.height, y + this.width]]
+    }
+
+    catchFirstRecord() {
+        if (this.objectType !== 'solid-walkable') {
+            this.positionChanged = true;
+            this.recordPosition(this.gridMap);
+            this.positionChanged = false;
+        }
     }
 }
 

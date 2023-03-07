@@ -1,4 +1,4 @@
-import { createGrid } from "./Base";
+import { createGrid, createRects } from "./Base";
 import { createGridMap } from "./Base";
 
 
@@ -23,11 +23,8 @@ export const Engine = {
             if (currentObj.render !== undefined) {
                 currentObj.render(root);
             }
-
-            currentObj.positionChanged = true;
-            currentObj.recordPostion(this.gridMap);
-            currentObj.positionChanged = false;
-
+            currentObj.gridMap = this.gridMap;
+            currentObj.catchFirstRecord();
             currentObj.Destroy = this.Destroy;
         }
         this.isInitialized = true;
@@ -35,10 +32,7 @@ export const Engine = {
     update() {
         for (const key in this.objects) {
             const currentObj = this.objects[key];
-            let checkCollision = false;
-            if (this.playerObject) {
-                checkCollision = this.willPlayerCollide();
-            }
+
 
             if (currentObj.rerender !== undefined) {
 
@@ -48,43 +42,42 @@ export const Engine = {
 
                     currentObj.rerender(point)
 
-                    if (!this.playerObject) {
-                        this.playerObject = currentObj;
-                    }
+                    this.playerObject = currentObj;
+
 
                 }
                 else {
-                    currentObj.rerender();
+                    currentObj.rerender(undefined, this.gridMap);
                 }
 
 
-                currentObj.recordPostion(this.gridMap);
+                currentObj.recordPosition(this.gridMap);
             }
         }
     },
-    controlInput(e) {
+    controlInput(e, speed = 1) {
         if (e.key === 'w') {
             if (this.currentY > 0) {
-                if (!this.willPlayerCollide(undefined, this.currentY - 1))
-                    this.currentY -= 1;
+                if (!this.willPlayerCollide(undefined, this.currentY - speed))
+                    this.currentY -= speed;
             }
         }
         if (e.key === 's') {
             if (this.currentY < this.grid[1].length) {
-                if (!this.willPlayerCollide(undefined, this.currentY + 1))
-                    this.currentY += 1;
+                if (!this.willPlayerCollide(undefined, this.currentY + speed))
+                    this.currentY += speed;
             }
         }
         if (e.key === 'a') {
             if (this.currentX > 0) {
-                if (!this.willPlayerCollide(this.currentX - 1, undefined))
-                    this.currentX -= 1;
+                if (!this.willPlayerCollide(this.currentX - speed, undefined))
+                    this.currentX -= speed;
             }
         }
         if (e.key === 'd') {
             if (this.currentX < this.grid[0].length) {
-                if (!this.willPlayerCollide(this.currentX + 1, undefined))
-                    this.currentX += 1;
+                if (!this.willPlayerCollide(this.currentX + speed, undefined))
+                    this.currentX += speed;
             }
         }
 
@@ -108,7 +101,8 @@ export const Engine = {
         const [x, y] = [this.grid[0][currentX], this.grid[1][currentY]]
         const width = this.playerObject.width;
         const height = this.playerObject.height;
-        const newRect = [[x, y], [x, y + width], [x + height, y], [x + height, y + width]]
+        console.log(width, height)
+        const newRect = createRects(x, y, width, height)
         let isColliding = false;
 
         newRect.forEach((i) => {

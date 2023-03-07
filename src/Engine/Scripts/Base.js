@@ -26,3 +26,7 @@ export function createGridMap(grid) {
     }
     return gridMap;
 }
+
+export function createRects(x, y, width, height) {
+    return [[x, y], [x, y + height], [x + width, y], [x + width, y + height]]
+}

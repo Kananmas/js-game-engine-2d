@@ -1,20 +1,8 @@
 import { Engine } from './Engine/Scripts/Engine';
-import { DynamicObject } from './Engine/Scripts/DynamicObject';
-import { Obsticale } from './Engine/Scripts/Obsticale';
+import Player from './Objects/Player'
+import { wallObject } from './Objects/Wall';
 
-const player = new DynamicObject();
-const Enemy = new DynamicObject(undefined, undefined);
-Enemy.setPostion([400, 400])
-const tile = new Obsticale([500, 300]);
-
-player.applyCustomStyles({
-    backgroundColor: 'red',
-})
-
-
-player.isPlayer = true;
-
-Engine.addObjects([player, Enemy, tile])
+Engine.addObjects([Player, wallObject])
 
 let int = 0;
 setInterval(() => {
@@ -36,9 +24,9 @@ setInterval(() => {
     else {
         Engine.initialze()
     }
-}, 50)
+}, 16.66)
 
-window.addEventListener('keypress', (e) => { Engine.controlInput(e) }, true)
+window.addEventListener('keypress', (e) => { Engine.controlInput(e, 2) }, true)
 
 
 
